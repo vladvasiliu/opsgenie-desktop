@@ -1,0 +1,25 @@
+[package]
+name = "opsgenie-desktop"
+version = "0.1.0"
+authors = ["Vlad Vasiliu <vladvasiliun@gmail.com>"]
+edition = "2018"
+
+
+[dependencies]
+chrono = "^0.4"
+clap = "^3.0.0-beta.2"
+color-eyre = "^0.5.10"
+fern = "^0.6"
+log = "^0.4"
+opsgenie-rs = { version = "0.1.0-alpha.2" }
+tokio = { version = "^1.0.1", features = ["macros", "parking_lot", "rt-multi-thread", "signal", "time"] }
+url = "^2.2"
+
+[profile.release]
+lto = true
+incremental = true
+codegen-units = 1
+panic = "abort"
+
+[profile.dev.package.backtrace]
+opt-level = 3
