@@ -6,4 +6,4 @@ notifications for new alerts.
 
 ## License
 
-This code is distributed under the terms of the GNU GPL v3. Please see [COPYING] for the license terms.
+This code is distributed under the terms of the GNU GPL v3. Please see [COPYING](COPYING) for the license terms.
