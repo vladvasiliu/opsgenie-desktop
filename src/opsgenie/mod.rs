@@ -5,6 +5,7 @@ use crate::config::Config;
 use chrono::{DateTime, Duration, Utc};
 use color_eyre::Result;
 use log::{debug, info};
+use notify_rust::{Hint, Notification, Urgency};
 use opsgenie_rs::apis::alert_api::list_alerts;
 use opsgenie_rs::apis::configuration::{ApiKey, Configuration as OpsGenieConfig};
 use tokio::signal::ctrl_c;
@@ -130,7 +131,22 @@ impl OpsGenieInterface {
     }
 
     fn handle_new_alerts(&self, new_alerts: Vec<String>) {
-        println!("{:#?}", new_alerts);
+        for alert_id in new_alerts {
+            if let Some(alert) = self.alerts.get(&alert_id).filter(|alert| {
+                alert.acknowledged == Some(false) && alert.status == Some("open".to_string())
+            }) {
+                let urgency = match alert.priority.as_ref() {
+                    Some(p) if p == "P1" || p == "P2" => Urgency::Critical,
+                    Some(p) if p == "P3" || p == "P4" => Urgency::Normal,
+                    _ => Urgency::Low,
+                };
+                Notification::new()
+                    .summary(alert.message.as_ref().unwrap())
+                    .hint(Hint::Urgency(urgency))
+                    .show()
+                    .unwrap();
+            }
+        }
     }
 
     pub async fn run(&mut self) -> Result<()> {
